@@ -12,20 +12,20 @@
 #endif
 // heartbeat interval between  hb task to all the tasks
 #define HB_INTERVAL 5
-enum class group_type : unsigned int //std::uint32_t
+enum class GROUP_TYPE : unsigned int //std::uint32_t
 {
-    worker = 0,
-    manager,
-    heart_beat,
+    WORKER = 0,
+    MANAGER,
+    GROUP_MAX,
 
 };
 // message tyep
-enum class msg_type : unsigned int
+enum class MSG_TYPE : unsigned int
 {
     // for manager
-    manager_hb_req = 0,
+    MANAGER_HB_REQ = 0,
     // for worker
-    manager_hb_resp
+    MANAGER_HB_RSP
 
 };
 
@@ -33,5 +33,17 @@ struct TASK_MSG
 {
     msg_type type;
     TASK_ANY body;
-}
+};
+
+struct TASK_HB_REQ_MSG
+{
+    GROUP_TYPE from_group;
+    std::uint32_t from_index;
+};
+struct TASK_HB_RSP_MSG
+{
+    GROUP_TYPE from_group;
+    std::uint32_t from_index;
+};
+
 typedef std::queue<TASK_MSG> TASK_QUEUE;

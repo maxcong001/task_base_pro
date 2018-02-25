@@ -1,4 +1,5 @@
 #include "task_base_pro.hpp"
+
 void evfdCallback(int fd, short event, void *args);
 class task_worker_base
 {
@@ -48,6 +49,7 @@ class task_worker_base
     {
     }
     virtual bool run() = 0;
+    virtual void on_message() = 0;
     //!!!!NOTE, please make sure your job use less time than heartbeat interval,
     // or we will consider the heart beat is lost!!!!!
     void process_msg(uint64_t num)
@@ -62,12 +64,14 @@ class task_worker_base
         while (_tmp_task_queue.size() != 0)
         {
             auto tmp = _tmp_task_queue.front();
-            if (tmp.type == MSG_TYPE::TASK_HB)
+            if (tmp.type == MSG_TYPE::MANAGER_HB_REQ)
             {
-                if (!_name.compare(TASK0))
+                if (_group_type == GROUP_TYPE::MANAGER)
                 {
                     _tmp_task_queue.pop();
-                    on_message(tmp);
+                    // this is manager task, should not receive the HB req message
+                    __LOG(warn, "manager task receive hb req");
+                    //on_message(tmp);
                     // this is task 0, do not send HB rsp
                     continue;
                 }
@@ -76,8 +80,11 @@ class task_worker_base
                     _tmp_task_queue.pop();
                     // this is HB message, send rsp
                     __LOG(debug, "task : " << _name << " send HB response to task0");
-                    tmp.body = _name;
-                    task_manager::instance()->send2task(TASK0, tmp);
+                    TASK_HB_REQ_MSG req_msg = TASK_ANY_CAST<TASK_HB_REQ_MSG>(tmp.body);
+                    TASK_HB_RSP_MSG rsp_msg;
+                    rsp_msg.from_group = _group_type;
+                    rsp_msg.from_index = _index;
+                    task_manager::instance()->send(MSG_TYPE::MANAGER_HB_RSP, rsp_msg, req_msg.from_group, req_msg.from_index);
                     continue;
                 }
             }
@@ -106,6 +113,7 @@ class task_worker_base
         return _index;
     }
     TASK_QUEUE _task_queue;
+    // index in the group
     std::uint32_t _index;
 
     std::mutex mtx;
@@ -116,4 +124,6 @@ class task_worker_base
     std::shared_ptr<translib::EventFdServer> _event_server;
     // timer.
     translib::TimerManager _timer_mgr;
+    // group type
+    GROUP_TYPE _group_type;
 };

@@ -6,4 +6,8 @@ class task_manager_worker : public task_worker_base
     bool run() override
     {
     }
+    void on_message()
+    {
+      
+    }
 };
