@@ -10,7 +10,8 @@
 #define TASK_ANY boost::any
 #define TASK_ANY_CAST boost::any_cast
 #endif
-
+// heartbeat interval between  hb task to all the tasks
+#define HB_INTERVAL 5
 enum class group_type : unsigned int //std::uint32_t
 {
     worker = 0,
