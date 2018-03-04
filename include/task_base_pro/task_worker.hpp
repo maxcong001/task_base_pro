@@ -48,6 +48,10 @@ class task_worker_base
     virtual void on_after_loop()
     {
     }
+    virtual bool restart()
+    {
+
+    }
     virtual bool run() = 0;
     virtual void on_message() = 0;
     //!!!!NOTE, please make sure your job use less time than heartbeat interval,

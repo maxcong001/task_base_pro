@@ -6,6 +6,7 @@ class task_manager
   public:
     task_manager()
     {
+        _groups.fill(nullptr);
     }
     static task_manager *instance()
     {
@@ -18,64 +19,40 @@ class task_manager
     bool refresh()
     {
     }
-
-    std::uint32_t add_group (GROUP_TYPE group, task_ptr_t task, std::uint32_t task_num)
+    std::uint32_t add_group(std::initializer_list<group_ptr_t> groups)
     {
-
-    }
-    bool del_group(GROUP_TYPE group)
-    {
-   
-        return true;
-    }
-
-
-    // note  if _poll is set to true, it will hang here and wait for incoming message
-    bool init(bool _poll = true)
-    {
-        // add task0
-        //std::shared_ptr<task_base> tmp_task_ptr_t = std::shared_ptr<manager_task>(new manager_task(std::string(TASK0)));
-        task_ptr_t tmp_task_ptr_t = std::static_pointer_cast<task_base>(std::make_shared<manager_task>(std::string(TASK0)));
-        add_tasks(tmp_task_ptr_t);
-
-        if (task_map.find(TASK0) == task_map.end())
+        for (auto it : groups)
         {
-            __LOG(error, "!!!!!!!!!at lease task0 should be provided!!");
-            return false;
-        }
-
-        for (auto it : task_map)
-        {
-            if (!it.first.compare(TASK0))
+            if (it)
             {
+                try
+                {
+                    _groups.at(it->get_group_type()) = it;
+                }
+                catch (const std::out_of_range &e)
+                {
+                    // the group type is out of range
+                    __LOG(error, "group type is invaliade!!!!");
+                    // do not exit here,
+                    // just continue
+                    continue;
+                }
             }
             else
             {
-                // this is not task 0, start a new task
-                it.second->init(true);
+                __LOG(warn, "the group ptr is not ready");
             }
         }
-        // init the task0
-        if (_poll)
-        {
-            task_map[TASK0]->set_hb_interval(_hb_itval);
-            task_map[TASK0]->init(false);
-        }
-        else
-        {
-            task_map[TASK0]->set_hb_interval(_hb_itval);
-            task_map[TASK0]->init(true);
-        }
+    }
+    bool del_group(GROUP_TYPE group)
+    {
+        return true;
+    }
+
+    bool init(bool _poll = true)
+    {
 
         return true;
     }
-    void set_hb_interval(std::uint32_t _hb_itval)
-    {
-        _hb_itval = _hb_itval;
-        task_map[TASK0]->set_hb_interval(_hb_itval);
-    }
-    std::map<std::string, task_ptr_t> task_map;
-    // heart beat interval
-    std::uint32_t _hb_itval;
-    std::atomic<std::uint32_t> _seq_id;
+    group_array _groups;
 };

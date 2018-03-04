@@ -18,8 +18,7 @@
 #include <cinttypes>
 #include <initializer_list>
 
-#define MAX_GROUP_SIZE 10
-#define MAX_WORKER_SIZE 10
+
 
 using group_ptr_t = std::shared_ptr<task_group>;
 using worker_ptr_t = std::shared_ptr<task_worker>;

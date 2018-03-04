@@ -12,13 +12,16 @@
 #endif
 // heartbeat interval between  hb task to all the tasks
 #define HB_INTERVAL 5
+
+#define MAX_WORKER_SIZE 10
+
 enum class GROUP_TYPE : unsigned int //std::uint32_t
 {
     WORKER = 0,
     MANAGER,
     GROUP_MAX,
-
 };
+using MAX_GROUP_SIZE = GROUP_TYPE::GROUP_MAX;
 // message tyep
 enum class MSG_TYPE : unsigned int
 {
