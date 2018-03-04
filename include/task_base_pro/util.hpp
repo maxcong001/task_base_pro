@@ -1,4 +1,4 @@
-
+#pragma once
 
 #if __cplusplus >= 201703L
 // use std::any
@@ -10,6 +10,14 @@
 #define TASK_ANY boost::any
 #define TASK_ANY_CAST boost::any_cast
 #endif
+
+#include <stdexcept> // std::out_of_range
+#include <cstdint>
+#include <queue>
+#include <memory>
+#include <thread>
+#include <iostream>
+
 // heartbeat interval between  hb task to all the tasks
 #define HB_INTERVAL 5
 
@@ -19,22 +27,23 @@ enum class GROUP_TYPE : unsigned int //std::uint32_t
 {
     WORKER = 0,
     MANAGER,
+    HELLOWORLD,
     GROUP_MAX,
 };
-using MAX_GROUP_SIZE = GROUP_TYPE::GROUP_MAX;
+
 // message tyep
 enum class MSG_TYPE : unsigned int
 {
     // for manager
     MANAGER_HB_REQ = 0,
     // for worker
-    MANAGER_HB_RSP
-
+    MANAGER_HB_RSP,
+    HW
 };
 
 struct TASK_MSG
 {
-    msg_type type;
+    MSG_TYPE type;
     TASK_ANY body;
 };
 

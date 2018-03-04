@@ -1,6 +1,8 @@
+#pragma once
 #include "util.hpp"
+#include "task_group.hpp"
 
-using task_ptr_t = std::shared_ptr<task_worker_base>;
+typedef std::function<void()> post_callback;
 class task_manager
 {
   public:
@@ -13,38 +15,56 @@ class task_manager
         static task_manager *ins = new task_manager();
         return ins;
     }
-    bool send(MSG_TYPE type, TASK_ANY body, GROUP_TYPE group, std::uint32_t index = 0xffffffff)
+    bool post(GROUP_TYPE type, TASK_MSG msg)
     {
+        // get group ptr_t
+        try
+        {
+            auto group_ptr_t = _groups.at((unsigned int)type);
+            // post message
+            group_ptr_t->send2one_worker(msg);
+        }
+        catch (const std::out_of_range &oor)
+        {
+            // out of group range
+            //std::cerr << "Out of Range error: " << oor.what() << '\n';
+            return false;
+        }
+        return true;
     }
-    bool refresh()
-    {
-    }
-    std::uint32_t add_group(std::initializer_list<group_ptr_t> groups)
+
+    bool add_group(group_array groups)
     {
         for (auto it : groups)
         {
             if (it)
             {
-                try
-                {
-                    _groups.at(it->get_group_type()) = it;
-                }
-                catch (const std::out_of_range &e)
-                {
-                    // the group type is out of range
-                    __LOG(error, "group type is invaliade!!!!");
-                    // do not exit here,
-                    // just continue
-                    continue;
-                }
+                add_group(it);
             }
             else
             {
                 __LOG(warn, "the group ptr is not ready");
+                return false;
             }
         }
+        return true;
     }
-    bool del_group(GROUP_TYPE group)
+    bool add_group(group_ptr_t group)
+    {
+        try
+        {
+            _groups.at((unsigned int)(group->get_group_type())) = group;
+        }
+        catch (const std::out_of_range &e)
+        {
+            // the group type is out of range
+            __LOG(error, "group type is invaliade!!!!");
+
+            return false;
+        }
+        return true;
+    }
+    bool del_group(GROUP_TYPE type)
     {
         return true;
     }
