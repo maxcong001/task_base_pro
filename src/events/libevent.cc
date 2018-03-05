@@ -1,7 +1,5 @@
 #include "events/libevent.h"
-
 #include <signal.h>
-
 #include "event2/thread.h"
 
 bool Global::initialized_ = false;

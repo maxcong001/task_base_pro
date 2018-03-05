@@ -16,6 +16,14 @@ DispatcherImpl::DispatcherImpl()
 {
   // The dispatcher won't work as expected if libevent hasn't been configured to use threads.
   RELEASE_ASSERT(Global::initialized());
+  // catch sigine  ctrl+c
+  int signo = SIGINT;
+  struct event *sig_event = evsignal_new(base_.get(), signo, [](int signo, short events, void *arg)
+                                         {
+                                           __LOG(debug, "catch sigint");
+                                         },
+                                         NULL);
+  evsignal_add(sig_event, NULL);
 }
 
 DispatcherImpl::~DispatcherImpl()

@@ -16,4 +16,5 @@ void task_worker_thread::threadRoutine()
 {
     dispatcher_->run(Dispatcher::RunType::Block);
     dispatcher_.reset();
+    __LOG(error, "worker thread exit!!!")
 }

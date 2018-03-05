@@ -17,6 +17,8 @@
 #include <memory>
 #include <thread>
 #include <iostream>
+#include <signal.h>
+#include "logger/logger.hpp"
 
 // heartbeat interval between  hb task to all the tasks
 #define HB_INTERVAL 5
