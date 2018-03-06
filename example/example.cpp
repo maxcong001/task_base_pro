@@ -4,7 +4,7 @@
 #include "task_base_pro/include"
 int main()
 {
-    set_log_level(logger_iface::log_level::warn);
+    set_log_level(logger_iface::log_level::debug);
     set_max_log_buff(10);
 
     dump_log();
@@ -18,7 +18,10 @@ int main()
     TASK_MSG msg;
     msg.type = MSG_TYPE::HW;
     msg.body = nullptr;
-
-    ins->post(GROUP_TYPE::HELLOWORLD, msg);
-    std::this_thread::sleep_for(std::chrono::seconds(10));
+    for (int i = 0; i < 1000; i++)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        ins->post(GROUP_TYPE::HELLOWORLD, msg);
+    }
+    std::this_thread::sleep_for(std::chrono::seconds(11));
 }
