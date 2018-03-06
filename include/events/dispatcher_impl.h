@@ -32,6 +32,11 @@ public:
 
   void post(std::function<void()> callback) override;
   void run(RunType type) override;
+  void HB_func()
+  {
+    HB_timer_->enableTimer(std::chrono::milliseconds(5000));
+    __LOG(debug, "in HB function");
+  }
 
 private:
   void runPostCallbacks();
@@ -39,6 +44,7 @@ private:
   BasePtr base_;
 
   TimerPtr post_timer_;
+  TimerPtr HB_timer_;
 
   std::mutex post_lock_;
   std::list<std::function<void()>> post_callbacks_;

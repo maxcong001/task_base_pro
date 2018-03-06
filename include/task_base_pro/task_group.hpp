@@ -6,7 +6,7 @@
 class task_group_base
 {
   public:
-    task_group_base(std::uint32_t worker_num)
+    task_group_base(std::uint32_t worker_num) : generator(), distribution(0, (worker_num - 1))
     {
         if (_worker_num > _worker_array.size())
         {
@@ -27,7 +27,6 @@ class task_group_base
         {
             _worker_array.at(i) = std::make_shared<task_worker_thread>();
             _worker_array[i]->start();
-            
         }
         return true;
     }
@@ -42,8 +41,8 @@ class task_group_base
     }
     bool send2one_worker(TASK_MSG &msg)
     {
-        // just for test
-        send2one_worker(msg, _worker_array.front());
+        int number = distribution(generator);
+        send2one_worker(msg, _worker_array.at(number));
         return true;
     }
 
@@ -58,6 +57,8 @@ class task_group_base
     {
         _type = type;
     }
+    std::default_random_engine generator;
+    std::uniform_int_distribution<int> distribution;
 
     worker_array _worker_array;
     GROUP_TYPE _type;

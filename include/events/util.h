@@ -1,6 +1,7 @@
 #pragma once
 #include "logger/logger.hpp"
 #include <signal.h>
+#include <random>
 /**
  * Friendly name for a pure virtual routine.
  */

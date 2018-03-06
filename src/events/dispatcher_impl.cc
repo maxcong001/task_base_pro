@@ -12,10 +12,12 @@
 #include "event2/event.h"
 
 DispatcherImpl::DispatcherImpl()
-    : base_(event_base_new()), post_timer_(createTimer([this]() -> void { runPostCallbacks(); }))
+    : base_(event_base_new()), post_timer_(createTimer([this]() -> void { runPostCallbacks(); })), HB_timer_(createTimer([this]() -> void { HB_func(); }))
 {
   // The dispatcher won't work as expected if libevent hasn't been configured to use threads.
   RELEASE_ASSERT(Global::initialized());
+  HB_timer_->enableTimer(std::chrono::milliseconds(5000));
+#if 0
   // catch sigine  ctrl+c
   int signo = SIGINT;
   struct event *sig_event = evsignal_new(base_.get(), signo, [](int signo, short events, void *arg)
@@ -24,6 +26,7 @@ DispatcherImpl::DispatcherImpl()
                                          },
                                          NULL);
   evsignal_add(sig_event, NULL);
+#endif
 }
 
 DispatcherImpl::~DispatcherImpl()

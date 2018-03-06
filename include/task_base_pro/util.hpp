@@ -18,6 +18,8 @@
 #include <thread>
 #include <iostream>
 #include <signal.h>
+#include <random>
+#include <list>
 #include "logger/logger.hpp"
 
 // heartbeat interval between  hb task to all the tasks
