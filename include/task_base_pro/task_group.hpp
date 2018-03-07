@@ -78,6 +78,7 @@ class hellow_world_task_group : public task_group_base
     bool send2one_worker(TASK_MSG &msg, worker_ptr_t worker) override
     {
         worker->dispatcher().post([msg]() {
+            std::cout << "get message with type : \t" << (unsigned int)msg.type;
             std::cout << "hello world from thread with id : " << std::this_thread::get_id() << std::endl;
         });
         return true;
